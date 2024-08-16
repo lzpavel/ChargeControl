@@ -13,13 +13,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lzpavel.chargecontrol.MainActivity
 import com.lzpavel.chargecontrol.MainViewModel
 
 @Preview(showBackground = true)
 @Composable
 fun ControlBlock(
-    mainViewModel: MainViewModel? = null,
-    onSwitchControl: (() -> Unit)? = null
+    mainActivity: MainActivity? = null
+//    mainViewModel: MainViewModel? = null,
+//    onSwitchControl: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -33,8 +35,10 @@ fun ControlBlock(
 //            control = it
 //        }
 //        var control = mainViewModel?.isControl?.observeAsState()?.value ?: false
+//        var control =
+//            mainViewModel?.isControlEnabledLive?.observeAsState()?.value ?: false
         var control =
-            mainViewModel?.isControlEnabledLive?.observeAsState()?.value ?: false
+            mainActivity?.mainViewModel?.isControlEnabledLive?.observeAsState()?.value ?: false
 
 
         Text(text = "Control")
@@ -42,7 +46,8 @@ fun ControlBlock(
             checked = control,
             onCheckedChange = null,
             modifier = Modifier.clickable {
-                onSwitchControl?.invoke()
+                mainActivity?.switchChargingService()
+//                onSwitchControl?.invoke()
             }
         )
     }

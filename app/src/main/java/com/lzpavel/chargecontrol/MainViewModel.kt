@@ -6,16 +6,14 @@ import androidx.lifecycle.ViewModel
 
 class MainViewModel : ViewModel() {
 
-    var isControlEnabled = false
-        set(value) {
-            field = value
-            //_isControlEnabledLive.value = value
-            _isControlEnabledLive.postValue(value)
-        }
-    private var _isControlEnabledLive = MutableLiveData<Boolean>(isControlEnabled)
+//    var isControlEnabled = false
+//        set(value) {
+//            field = value
+//            //_isControlEnabledLive.value = value
+//            _isControlEnabledLive.postValue(value)
+//        }
+    private var _isControlEnabledLive = MutableLiveData<Boolean>(AppConfig.isStartedChargingService)
     val isControlEnabledLive: LiveData<Boolean> = _isControlEnabledLive
-
-
 
 //    init {
 //        AppConfig.onControlEnabledChanged = {
@@ -25,7 +23,11 @@ class MainViewModel : ViewModel() {
 //        }
 //    }
 
-
+    fun updateUI() {
+        if (isControlEnabledLive.value != AppConfig.isStartedChargingService) {
+            _isControlEnabledLive.value = AppConfig.isStartedChargingService
+        }
+    }
 
 
 

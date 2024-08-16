@@ -19,11 +19,12 @@ import androidx.core.content.ContextCompat
 import com.lzpavel.chargecontrol.view.MainScreen
 
 class MainActivity : ComponentActivity() {
+
     private val LOG_TAG = "MainActivity"
 
-    private val mainViewModel: MainViewModel by viewModels()
+    val mainViewModel: MainViewModel by viewModels()
 
-    private val listener = Listener()
+//    private val listener = Listener()
 
     //private var chargingService: ChargingService? = null
     //private var isChargingServiceStarted = false
@@ -57,7 +58,8 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            MainScreen(mainViewModel, listener)
+//            MainScreen(mainViewModel, listener)
+            MainScreen(this)
         }
 
         onBackPressedDispatcher.addCallback(this) {
@@ -79,7 +81,8 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         subscribeReceiver()
-        checkForStartService()
+        mainViewModel.updateUI()
+//        checkForStartService()
 //        Intent(this, ChargingService::class.java).also { intent ->
 //            bindService(intent, chargingServiceConnection, Context.BIND_AUTO_CREATE)
 //        }
@@ -107,21 +110,21 @@ class MainActivity : ComponentActivity() {
         ChargingNotification.show(this, "Test notify")
     }
 
-    private fun checkForStartService() {
-        Intent().also {
-            it.`package` = packageName
-            it.action = "CHARGING_RECEIVER"
-            it.putExtra("command", 2)
-            sendBroadcast(it)
-        }
-    }
+//    private fun checkForStartService() {
+//        Intent().also {
+//            it.`package` = packageName
+//            it.action = "CHARGING_RECEIVER"
+//            it.putExtra("command", 2)
+//            sendBroadcast(it)
+//        }
+//    }
 
     fun switchChargingService() {
-        if (mainViewModel.isControlEnabled) {
+        if (AppConfig.isStartedChargingService) {
             Intent().also {
                 it.`package` = packageName
-                it.action = "CHARGING_RECEIVER"
-                it.putExtra("command", 1)
+                it.action = "CHARGING_SERVICE_RECEIVER"
+                it.putExtra("command", "stop")
                 sendBroadcast(it)
             }
         } else {
@@ -164,15 +167,17 @@ class MainActivity : ComponentActivity() {
     inner class MainActivityReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             if (intent?.action == "MAIN_ACTIVITY_RECEIVER") {
-                mainViewModel.isControlEnabled = intent.getBooleanExtra("isStarted", false)
+                if (intent.getStringExtra("command") == "updateUI") {
+                    mainViewModel.updateUI()
+                }
             }
         }
 
     }
 
-    inner class Listener() {
-        val onTestSetCurrent = { testSetCurrent() }
-        val onSwitchControl = { switchChargingService() }
-    }
+//    inner class Listener() {
+//        val onTestSetCurrent = { testSetCurrent() }
+//        val onSwitchControl = { switchChargingService() }
+//    }
 }
 

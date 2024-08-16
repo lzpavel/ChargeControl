@@ -31,12 +31,16 @@ class ChargingService : Service() {
 
     private var isStarted = false
         set(value) {
-            if (field != value) {
-                field = value
-                notifyStarted()
-            } else {
-                field = value
-            }
+            field = value
+            AppConfig.isStartedChargingService = value
+            notifyStarted()
+//            if (field != value) {
+//                field = value
+//                notifyStarted()
+//            } else {
+//                field = value
+//            }
+
         }
 
 
@@ -138,7 +142,8 @@ class ChargingService : Service() {
         Intent().also {
             it.`package` = packageName
             it.action = "MAIN_ACTIVITY_RECEIVER"
-            it.putExtra("isStarted", isStarted)
+//            it.putExtra("isStarted", isStarted)
+            it.putExtra("command", "updateUI")
             sendBroadcast(it)
         }
     }
@@ -160,7 +165,7 @@ class ChargingService : Service() {
         ContextCompat.registerReceiver(
             this,
             chargingServiceReceiver,
-            IntentFilter("CHARGING_RECEIVER"),
+            IntentFilter("CHARGING_SERVICE_RECEIVER"),
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
     }
@@ -172,11 +177,11 @@ class ChargingService : Service() {
 
     inner class ChargingServiceReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == "CHARGING_RECEIVER") {
-                val command = intent.getIntExtra("command", 0)
+            if (intent?.action == "CHARGING_SERVICE_RECEIVER") {
+                val command = intent.getStringExtra("command")
                 when (command) {
-                    1 -> stopChargingService()
-                    2 -> notifyStarted()
+                    "stop" -> stopChargingService()
+                    "ping" -> notifyStarted()
                 }
             }
         }

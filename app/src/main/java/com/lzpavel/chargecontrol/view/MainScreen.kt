@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,8 +21,9 @@ import com.lzpavel.chargecontrol.ui.theme.ChargeControlTheme
 @Preview(showBackground = true)
 @Composable
 fun MainScreen(
-    mainViewModel: MainViewModel? = null,
-    maListener: MainActivity.Listener? = null
+    mainActivity: MainActivity? = null
+//    mainViewModel: MainViewModel? = null,
+//    maListener: MainActivity.Listener? = null
 ) {
     ChargeControlTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -29,21 +31,23 @@ fun MainScreen(
                 modifier = Modifier.padding(innerPadding)
             ) {
                 ControlBlock(
-                    mainViewModel,
-                    maListener?.onSwitchControl
+                    mainActivity
+//                    mainViewModel,
+//                    maListener?.onSwitchControl
                 )
-                Divider()
+                HorizontalDivider()
                 LevelLimitBlock()
-                Divider()
+                HorizontalDivider()
                 CurrentLimitBlock()
-                Divider()
+                HorizontalDivider()
                 LowStartBlock()
-                Divider()
+                HorizontalDivider()
                 LowStartCurrentBlock()
-                Divider()
+                HorizontalDivider()
                 Button(
                     onClick = {
-                        maListener?.onTestSetCurrent?.invoke()
+//                        maListener?.onTestSetCurrent?.invoke()
+                        mainActivity?.testSetCurrent()
                     },
 
                     ) {
