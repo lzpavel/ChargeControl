@@ -11,6 +11,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 class ChargeControl (
+    val chargeSettings: ChargeSettings,
     val superUserSession: SuperUserSession,
     val job: Job,
     val scope: CoroutineScope,
@@ -23,7 +24,7 @@ class ChargeControl (
     private var isInit = false
     private var isCharged = false
 
-    private var isLowStart = AppConfig.isLowStart
+    private var isLowStart = chargeSettings.isLowStart
     private var isLowStartStarted = false
     private var lowStartCnt = 0
     private var currentBatteryDefault = "5400000"
@@ -86,7 +87,7 @@ class ChargeControl (
                 mutex.withLock {
                     isLowStartStarted = true
                     currentBatteryDefault = ChargingDriver.getCurrentBattery(superUserSession)
-                    ChargingDriver.setCurrentBattery(superUserSession, "${AppConfig.lowStartCurrent}")
+                    ChargingDriver.setCurrentBattery(superUserSession, "${chargeSettings.lowStartCurrent}")
                 }
                 while (isActive && !isPluggedPower) {
                     delay(1000L)
@@ -116,11 +117,11 @@ class ChargeControl (
         val level = ChargingDriver.getLevel(superUserSession).toIntOrNull() ?: -1
         val switch = ChargingDriver.getChargingSwitch(superUserSession)
 
-        if (current > 0 && current != AppConfig.currentLimit) {
-            ChargingDriver.setCurrent(superUserSession, AppConfig.currentLimit.toString())
+        if (current > 0 && current != chargeSettings.currentLimit) {
+            ChargingDriver.setCurrent(superUserSession, chargeSettings.currentLimit.toString())
         }
 
-        if (level < AppConfig.levelLimit) {
+        if (level < chargeSettings.levelLimit) {
             if (switch != ChargingDriver.CHARGING_SWITCH_ON_DEFAULT) {
                 ChargingDriver.setChargingSwitch(superUserSession, ChargingDriver.CHARGING_SWITCH_ON_DEFAULT)
             }

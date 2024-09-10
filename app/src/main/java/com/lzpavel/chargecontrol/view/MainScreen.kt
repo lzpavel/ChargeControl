@@ -3,15 +3,12 @@ package com.lzpavel.chargecontrol.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.lzpavel.chargecontrol.MainActivity
 import com.lzpavel.chargecontrol.MainViewModel
 import com.lzpavel.chargecontrol.ui.theme.ChargeControlTheme
 //import androidx.compose.runtime.getValue
@@ -21,49 +18,48 @@ import com.lzpavel.chargecontrol.ui.theme.ChargeControlTheme
 @Preview(showBackground = true)
 @Composable
 fun MainScreen(
-    mainActivity: MainActivity? = null
-//    mainViewModel: MainViewModel? = null,
-//    maListener: MainActivity.Listener? = null
+    viewModel: MainViewModel? = null,
+    onClickSwitchControl: () -> Unit = {}
 ) {
     ChargeControlTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
             Column(
                 modifier = Modifier.padding(innerPadding)
             ) {
-                ControlBlock(
-                    mainActivity
-//                    mainViewModel,
-//                    maListener?.onSwitchControl
+                SwitchBlock(
+                    name = "Control",
+                    value = viewModel?.isControlEnabledLive?.observeAsState()?.value ?: false,
+                    onClickSwitch = onClickSwitchControl
                 )
                 HorizontalDivider()
-                LevelLimitBlock()
+                EditBlock(
+                    name = "Level limit",
+                    value = viewModel?.levelLimitLive?.observeAsState()?.value ?: "Value",
+                    onValueChange = { viewModel?.editLevelLimit(it) },
+                    onDone = { viewModel?.setLevelLimit(it) }
+                )
                 HorizontalDivider()
-                CurrentLimitBlock()
+                EditBlock(
+                    name = "Current limit",
+                    value = viewModel?.currentLimitLive?.observeAsState()?.value ?: "Value",
+                    onValueChange = { viewModel?.editCurrentLimit(it) },
+                    onDone = { viewModel?.setCurrentLimit(it) }
+                )
                 HorizontalDivider()
-                LowStartBlock()
+                SwitchBlock(
+                    name = "Low Start",
+                    value = viewModel?.isLowStartLive?.observeAsState()?.value ?: false,
+                    onClickSwitch = { viewModel?.setLowStartEnabled() }
+                )
                 HorizontalDivider()
-                LowStartCurrentBlock()
-                HorizontalDivider()
-                Button(
-                    onClick = {
-//                        maListener?.onTestSetCurrent?.invoke()
-                        mainActivity?.testSetCurrent()
-                    },
-
-                    ) {
-                    Text(text = "Test set current")
-                }
-                Button(
-                    onClick = {
-
-                    },
-
-                    ) {
-                    Text(text = "Test")
-                }
+                EditBlock(
+                    name = "Low start current",
+                    value = viewModel?.lowStartCurrentLive?.observeAsState()?.value ?: "Value",
+                    onValueChange = { viewModel?.editLowStartCurrent(it) },
+                    onDone = { viewModel?.setLowStartCurrent(it) }
+                )
 
             }
-
         }
     }
 }

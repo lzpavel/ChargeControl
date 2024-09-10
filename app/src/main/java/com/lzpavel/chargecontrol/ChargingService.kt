@@ -9,13 +9,21 @@ import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.content.ContextCompat
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class ChargingService : Service() {
+
+    companion object {
+        var isStarted: Boolean = false
+            private set
+    }
 
     val LOG_TAG = "ChargingService"
 
@@ -29,18 +37,14 @@ class ChargingService : Service() {
     private var superUserSession: SuperUserSession? = null
     var chargeControl: ChargeControl? = null
 
+    @Inject
+    lateinit var chargeSettings: ChargeSettings
+
     private var isStarted = false
         set(value) {
             field = value
-            AppConfig.isStartedChargingService = value
+            Companion.isStarted = field
             notifyStarted()
-//            if (field != value) {
-//                field = value
-//                notifyStarted()
-//            } else {
-//                field = value
-//            }
-
         }
 
 
@@ -57,6 +61,7 @@ class ChargingService : Service() {
 
         if (superUserSession != null) {
             chargeControl = ChargeControl(
+                chargeSettings,
                 superUserSession!!,
                 job,
                 scope
@@ -142,8 +147,7 @@ class ChargingService : Service() {
         Intent().also {
             it.`package` = packageName
             it.action = "MAIN_ACTIVITY_RECEIVER"
-//            it.putExtra("isStarted", isStarted)
-            it.putExtra("command", "updateUI")
+            it.putExtra("command", "update_switch")
             sendBroadcast(it)
         }
     }

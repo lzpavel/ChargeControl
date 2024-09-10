@@ -8,20 +8,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.lzpavel.chargecontrol.MainActivity
-import com.lzpavel.chargecontrol.MainViewModel
 
 @Preview(showBackground = true)
 @Composable
-fun ControlBlock(
-    mainActivity: MainActivity? = null
-//    mainViewModel: MainViewModel? = null,
-//    onSwitchControl: (() -> Unit)? = null
+fun SwitchBlock(
+    name: String = "Name",
+    value: Boolean = false,
+    onClickSwitch: () -> Unit = {}
 ) {
     Row(
         modifier = Modifier
@@ -30,24 +27,12 @@ fun ControlBlock(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-//        var control by remember { mutableStateOf(ChargingConfig.isControlEnabled) }
-//        ChargingConfig.onControlEnabledChanged = {
-//            control = it
-//        }
-//        var control = mainViewModel?.isControl?.observeAsState()?.value ?: false
-//        var control =
-//            mainViewModel?.isControlEnabledLive?.observeAsState()?.value ?: false
-        var control =
-            mainActivity?.mainViewModel?.isControlEnabledLive?.observeAsState()?.value ?: false
-
-
-        Text(text = "Control")
+        Text(text = name)
         Switch(
-            checked = control,
+            checked = value,
             onCheckedChange = null,
             modifier = Modifier.clickable {
-                mainActivity?.switchChargingService()
-//                onSwitchControl?.invoke()
+                onClickSwitch()
             }
         )
     }
