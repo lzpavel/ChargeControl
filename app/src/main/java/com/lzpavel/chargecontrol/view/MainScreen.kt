@@ -3,8 +3,10 @@ package com.lzpavel.chargecontrol.view
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -19,7 +21,9 @@ import com.lzpavel.chargecontrol.ui.theme.ChargeControlTheme
 @Composable
 fun MainScreen(
     viewModel: MainViewModel? = null,
-    onClickSwitchControl: () -> Unit = {}
+    onClickSwitchControl: () -> Unit = {},
+    onClickLoad: () -> Unit = {},
+    onClickSave: () -> Unit = {}
 ) {
     ChargeControlTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -58,6 +62,13 @@ fun MainScreen(
                     onValueChange = { viewModel?.editLowStartCurrent(it) },
                     onDone = { viewModel?.setLowStartCurrent(it) }
                 )
+                HorizontalDivider()
+                Button(onClick = onClickLoad) {
+                    Text(text = "Load")
+                }
+                Button(onClick = onClickSave) {
+                    Text(text = "Save")
+                }
 
             }
         }

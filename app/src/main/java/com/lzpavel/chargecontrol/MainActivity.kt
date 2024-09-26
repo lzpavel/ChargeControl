@@ -7,14 +7,21 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.lzpavel.chargecontrol.view.MainScreen
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +40,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             MainScreen(
                 mainViewModel,
-                onClickSwitchControl = { switchChargingService() }
+                onClickSwitchControl = { switchChargingService() },
+                onClickSave = { save() },
+                onClickLoad = { load() }
             )
 
         }
@@ -73,6 +82,44 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         Log.d(LOG_TAG, "onDestroy")
         super.onDestroy()
+    }
+
+    private fun save() {
+        //Save
+        mainViewModel.saveSettings()
+//        mainViewModel.saveExampleValue("my_first_value")
+    }
+    private fun load() {
+        //Load
+        mainViewModel.loadSettings()
+//        lifecycleScope.launch {
+//            mainViewModel.exampleFlow.collect { value ->
+//                Toast.makeText(this@MainActivity, value, Toast.LENGTH_SHORT).show()
+//            }
+//        }
+    }
+
+    private fun test() {
+//        val exampleData = runBlocking { dataStore.data.first() }
+//        //Save
+//        mainViewModel.saveExampleValue("my_first_value")
+//
+//        //Load
+//        lifecycleScope.launch {
+//            mainViewModel.exampleFlow.collect { value ->
+//                Toast.makeText(this@MainActivity, value, Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
+//        val json = Json.encodeToString(MyData.serializer(), MyData("John", 30))
+//        Log.d(LOG_TAG, json)
+//        val newData = Json.decodeFromString(MyData.serializer(), json)
+//        Log.d(LOG_TAG, newData.toString())
+//
+//        val json2 = Json.encodeToString(MyData("Tom", 42))
+//        Log.d(LOG_TAG, json2)
+//        val rx2 = Json.decodeFromString<MyData>(json2)
+//        Log.d(LOG_TAG, rx2.toString())
     }
 
     private fun switchChargingService() {
