@@ -1,6 +1,7 @@
 package com.lzpavel.chargecontrol
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -23,18 +24,42 @@ class DataStoreManager @Inject constructor(
     private val chargeSettings: ChargeSettings
 )  {
 
+    companion object {
+        private val LEVEL_LIMIT = intPreferencesKey("level_limit")
+        private val CURRENT_LIMIT = intPreferencesKey("current_limit")
+        private val LOW_START_CURRENT = intPreferencesKey("low_start_current")
+        private val IS_LOW_START= booleanPreferencesKey("is_low_start")
+
+        var isLoaded = false
+        var isLoading = false
+    }
+
+    val LOG_TAG = "DataStoreManager"
+
 //    private val EXAMPLE_KEY = stringPreferencesKey("example_key")
-    private val LEVEL_LIMIT = intPreferencesKey("level_limit")
-    private val CURRENT_LIMIT = intPreferencesKey("current_limit")
-    private val LOW_START_CURRENT = intPreferencesKey("low_start_current")
-    private val IS_LOW_START= booleanPreferencesKey("is_low_start")
-
-
 //    val exampleFlow: Flow<String> = dataStore.data.map { preferences ->
 //        preferences[EXAMPLE_KEY] ?: "default_value"
 //    }
 
     suspend fun load() {
+        if (!isLoaded && !isLoading) {
+            isLoading = true
+            loadOp()
+            isLoaded = true
+            isLoading = false
+        }
+    }
+
+    suspend fun reload() {
+        if (!isLoading) {
+            isLoading = true
+            loadOp()
+            isLoaded = true
+            isLoading = false
+        }
+    }
+
+    private suspend fun loadOp() {
         dataStore.data.map { pref ->
             //pref[EXAMPLE_KEY] ?: "default_value"
             pref[LEVEL_LIMIT]?.let {
@@ -50,6 +75,14 @@ class DataStoreManager @Inject constructor(
                 chargeSettings.lowStartCurrent = it
             }
         }.first()
+        Log.d(LOG_TAG, "Load OK")
+    }
+
+    suspend fun clear() {
+        dataStore.edit {
+            it.clear()
+        }
+        Log.d(LOG_TAG, "Cleared OK")
     }
 
     suspend fun save() {
@@ -59,5 +92,6 @@ class DataStoreManager @Inject constructor(
             pref[IS_LOW_START] = chargeSettings.isLowStart
             pref[LOW_START_CURRENT] = chargeSettings.lowStartCurrent
         }
+        Log.d(LOG_TAG, "Save OK")
     }
 }

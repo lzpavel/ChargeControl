@@ -32,23 +32,4 @@ object AppModule {
         return DataStoreManager(dataStore, chargeSettings)
     }
 
-
-
-//    @Provides
-//    @Singleton
-//    fun providePreferencesDataStore(@ApplicationContext context: Context): PreferencesDataStore {
-//        return PreferencesDataStore(context)
-//    }
-
-//    @Provides
-//    @Singleton
-//    fun dataStore(@ApplicationContext appContext: Context): DataStore<Preferences> =
-//        appContext.createDataStore("settings")
-
-//    @Singleton
-//    @Provides
-//    fun providePerson(): Person {
-//        return Person("Tom", 32)
-//    }
-
 }

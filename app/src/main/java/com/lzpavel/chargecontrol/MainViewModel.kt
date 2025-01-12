@@ -21,17 +21,10 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val chargeSettings: ChargeSettings,
-//    private val dataStore: DataStore<Preferences>,
     private val dataStoreManager: DataStoreManager
 ) : ViewModel() {
 
     val LOG_TAG = "MainViewModel"
-
-//    private val EXAMPLE_KEY = stringPreferencesKey("example_key")
-
-//    val exampleFlow: Flow<String> = dataStore.data.map { preferences ->
-//        preferences[EXAMPLE_KEY] ?: "default_value"
-//    }
 
     private var _isControlEnabledLive = MutableLiveData(ChargingService.isStarted)
     val isControlEnabledLive: LiveData<Boolean> = _isControlEnabledLive
@@ -48,54 +41,45 @@ class MainViewModel @Inject constructor(
     private var _lowStartCurrentLive = MutableLiveData(chargeSettings.lowStartCurrent.toString())
     val lowStartCurrentLive: LiveData<String> = _lowStartCurrentLive
 
-//    fun saveExampleValue(value: String) {
-//        viewModelScope.launch {
-//            dataStore.edit { preferences ->
-//                preferences[EXAMPLE_KEY] = value
-//            }
-//        }
-//    }
+    private var _toastLive = MutableLiveData<String?>()
+    val toastLive: LiveData<String?> = _toastLive
 
-//    private val LEVEL_LIMIT = intPreferencesKey("level_limit")
-//    private val CURRENT_LIMIT = intPreferencesKey("current_limit")
-//    private val LOW_START_CURRENT = intPreferencesKey("low_start_current")
-//    private val IS_LOW_START= booleanPreferencesKey("is_low_start")
+    init {
+        loadSettings()
+    }
 
 
     fun loadSettings() {
         viewModelScope.launch {
-//            dataStore.data.map { pref ->
-//                //pref[EXAMPLE_KEY] ?: "default_value"
-//                pref[LEVEL_LIMIT]?.let {
-//                    chargeSettings.levelLimit = it
-//                }
-//                pref[CURRENT_LIMIT]?.let {
-//                    chargeSettings.currentLimit = it
-//                }
-//                pref[IS_LOW_START]?.let {
-//                    chargeSettings.isLowStart = it
-//                }
-//                pref[LOW_START_CURRENT]?.let {
-//                    chargeSettings.lowStartCurrent = it
-//                }
-//
-//            }.first()
             dataStoreManager.load()
             postUpdateUI()
-            Log.d(LOG_TAG, "Load OK")
+            _toastLive.postValue("Load Settings OK")
+            Log.d(LOG_TAG, "Load Settings OK")
+        }
+    }
+
+    fun reloadSettings() {
+        viewModelScope.launch {
+            dataStoreManager.reload()
+            postUpdateUI()
+            _toastLive.postValue("Reload Settings OK")
+            Log.d(LOG_TAG, "Reload Settings OK")
         }
     }
 
     fun saveSettings() {
         viewModelScope.launch {
-//            dataStore.edit { pref ->
-//                pref[LEVEL_LIMIT] = chargeSettings.levelLimit
-//                pref[CURRENT_LIMIT] = chargeSettings.currentLimit
-//                pref[IS_LOW_START] = chargeSettings.isLowStart
-//                pref[LOW_START_CURRENT] = chargeSettings.lowStartCurrent
-//            }
             dataStoreManager.save()
-            Log.d(LOG_TAG, "Save OK")
+            _toastLive.postValue("Save Settings OK")
+            Log.d(LOG_TAG, "Save Settings OK")
+        }
+    }
+
+    fun clearDataStore() {
+        viewModelScope.launch {
+            dataStoreManager.clear()
+            _toastLive.postValue("Clear DataStore OK")
+            Log.d(LOG_TAG, "Clear DataStore OK")
         }
     }
 

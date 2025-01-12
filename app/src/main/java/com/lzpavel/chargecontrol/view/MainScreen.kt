@@ -22,8 +22,8 @@ import com.lzpavel.chargecontrol.ui.theme.ChargeControlTheme
 fun MainScreen(
     viewModel: MainViewModel? = null,
     onClickSwitchControl: () -> Unit = {},
-    onClickLoad: () -> Unit = {},
-    onClickSave: () -> Unit = {}
+    scheduleWork: () -> Unit = {},
+    cancelWork: () -> Unit = {}
 ) {
     ChargeControlTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -63,11 +63,20 @@ fun MainScreen(
                     onDone = { viewModel?.setLowStartCurrent(it) }
                 )
                 HorizontalDivider()
-                Button(onClick = onClickLoad) {
+                Button(onClick = { viewModel?.reloadSettings() }) {
                     Text(text = "Load")
                 }
-                Button(onClick = onClickSave) {
+                Button(onClick = { viewModel?.clearDataStore() }) {
+                    Text(text = "Clear")
+                }
+                Button(onClick = { viewModel?.saveSettings() }) {
                     Text(text = "Save")
+                }
+                Button(onClick = scheduleWork) {
+                    Text(text = "Schedule Work")
+                }
+                Button(onClick = cancelWork) {
+                    Text(text = "Cancel Work")
                 }
 
             }

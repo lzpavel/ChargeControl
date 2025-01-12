@@ -39,6 +39,8 @@ class ChargingService : Service() {
 
     @Inject
     lateinit var chargeSettings: ChargeSettings
+    @Inject
+    lateinit var dataStoreManager: DataStoreManager
 
     private var isStarted = false
         set(value) {
@@ -57,8 +59,12 @@ class ChargingService : Service() {
         Log.d(LOG_TAG, "onStartCommand")
         startForeground(1, ChargingNotification.build(this, "level limit: limit value"))
         isStarted = true
-        openSu()
 
+
+        runBlocking {
+            dataStoreManager.load()
+        }
+        openSu()
         if (superUserSession != null) {
             chargeControl = ChargeControl(
                 chargeSettings,
